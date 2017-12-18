@@ -86,6 +86,8 @@ function streetart(req, res) {
           res.json(streetart);
         });
   
+      }).catch(function (error) {
+        console.log(error);
       });
 
   });
