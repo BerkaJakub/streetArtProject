@@ -11,7 +11,7 @@ a127.init(function(config) {
 
   // include a127 middleware
   app.use(a127.middleware(config));
-
+  app.set('view engine', 'ejs');
   // error handler to emit errors as a json string
   app.use(function(err, req, res, next) {
     if (typeof err !== 'object') {
@@ -25,7 +25,7 @@ a127.init(function(config) {
     }
 
     // Return a JSON representation of #/definitions/ErrorResponse
-    res.set('Content-Type', 'application/json');
+    //res.set('Content-Type', 'application/json');
     res.end(JSON.stringify(err));
   });
 

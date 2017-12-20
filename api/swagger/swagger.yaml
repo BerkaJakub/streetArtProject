@@ -16,7 +16,10 @@ consumes:
   - application/json
 # format of the responses to the client (Accepts)
 produces:
-  - application/json
+- application/xml
+- application/json
+- application/javascript
+- text/html
 x-a127-config: {}
 x-a127-services: {}
 paths:

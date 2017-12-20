@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAJrwnSThnUGXMjlCaJrWHmczNnzXVBSNo&callback=initialize" async defer>
+  </script>
+
+
+<script>
+function initialize() {
+  var mapProp = {
+    center:new google.maps.LatLng(<%=lat%>, <%=lon%>),
+    zoom:12,
+    mapTypeId:google.maps.MapTypeId.ROADMAP
+  };
+  var map=new google.maps.Map(document.getElementById("googleMap"), mapProp);
+
+  var infoWindow = new google.maps.InfoWindow();
+function addMarkers(map, loc, text, author, urlThumb) {
+    var marker = new google.maps.Marker({
+       position: loc,
+       label: '',
+       map: map,
+       title: 'Place1'
+    })
+    var content = "<div class='info'><br><h3 class='infotitle'>" + text + "</h3><br>" +
+            "<p class='infodesc'><img src=" + urlThumb + "/></p><br>" +
+            "<p>Posted by: " + author + "</p></div>";
+    google.maps.event.addListener(marker, "click", function () {
+       infoWindow.setContent(content);
+       infoWindow.open(map, this);
+    });   
+}
+<% for(var i=0; i<photos.length; i++) { %>
+            addMarkers(map, {lat: <%= photos[i].lat %>, lng: <%= photos[i].lon %>}, "<%= photos[i].text %>", "<%= photos[i].author %>", "<%= photos[i].urlFlickerThumb %>"  );
+        <% } %>
+
+}
+google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+</head>
+
+<body>
+<div id="googleMap" style="width:1000px;height:1000px;"></div>
+
+</body>
+</html>

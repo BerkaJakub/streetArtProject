@@ -17,6 +17,8 @@ module.exports = {
   Param 2: a handle to the response object
  */
 function streetart(req, res) {
+
+  
   // variables defined in the Swagger document can be referenced using req.swagger.params.{parameter_name}
   var city = req.swagger.params.city.value || 'Prague';
 
@@ -79,11 +81,30 @@ function streetart(req, res) {
           });
           streetart = {
             city: city,
-            lat: "50.0755381",
-            lon: "14.43780049999998",
+            lat: location.lat,
+            lon: location.lng,
             photos: photos
           }
-          res.json(streetart);
+          //res.json(streetart);
+
+          res.format({
+            'text/html': function(){
+              res.render('index.ejs', {
+                city: req.swagger.params.city.value,
+                lat: location.lat,
+                lon: location.lng,
+                photos: photos
+              });
+            },  
+            'application/json': function(){
+               res.json(streetart);
+            },
+    
+            'default': function() {
+              console.log("default");
+            }
+          })
+        
         });
   
       }).catch(function (error) {
