@@ -13,9 +13,7 @@ function initialize() {
     mapTypeId:google.maps.MapTypeId.ROADMAP
   };
   var map=new google.maps.Map(document.getElementById("googleMap"), mapProp);
-  var heatmap = new google.maps.visualization.HeatmapLayer({
-          map: map
-        });
+  
 
   var infoWindow = new google.maps.InfoWindow();
 function addMarkers(map, loc, text, author,urlThumb, urlSmall ) {
@@ -26,8 +24,7 @@ function addMarkers(map, loc, text, author,urlThumb, urlSmall ) {
        title: 'Place1'
     });
     var point = new google.maps.LatLng({
-       position: loc,
-       map: heatmap,
+       position: loc
     });
 
     var content = "<div class='info'><br><h3 class='infotitle'>" + text + "</h3><br>" +
