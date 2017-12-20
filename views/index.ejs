@@ -13,15 +13,23 @@ function initialize() {
     mapTypeId:google.maps.MapTypeId.ROADMAP
   };
   var map=new google.maps.Map(document.getElementById("googleMap"), mapProp);
+  var heatmap = new google.maps.visualization.HeatmapLayer({
+          map: map
+        });
 
   var infoWindow = new google.maps.InfoWindow();
-function addMarkers(map, loc, text, author, urlThumb) {
+function addMarkers(map, loc, text, author,urlThumb, urlSmall ) {
     var marker = new google.maps.Marker({
        position: loc,
        label: '',
        map: map,
        title: 'Place1'
-    })
+    });
+    var point = new google.maps.LatLng({
+       position: loc,
+       map: heatmap,
+    });
+
     var content = "<div class='info'><br><h3 class='infotitle'>" + text + "</h3><br>" +
             "<p class='infodesc'><img src=" + urlThumb + "/></p><br>" +
             "<p>Posted by: " + author + "</p></div>";
@@ -31,7 +39,7 @@ function addMarkers(map, loc, text, author, urlThumb) {
     });   
 }
 <% for(var i=0; i<photos.length; i++) { %>
-            addMarkers(map, {lat: <%= photos[i].lat %>, lng: <%= photos[i].lon %>}, "<%= photos[i].text %>", "<%= photos[i].author %>", "<%= photos[i].urlFlickerThumb %>"  );
+            addMarkers(map, {lat: <%= photos[i].lat %>, lng: <%= photos[i].lon %>}, "<%= photos[i].text %>", "<%= photos[i].author %>", "<%= photos[i].urlFlickerThumb %>", "<%= photos[i].urlFlickerSmall %>"  );
         <% } %>
 
 }
@@ -40,7 +48,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 </head>
 
 <body>
-<div id="googleMap" style="width:1000px;height:1000px;"></div>
+<div id="googleMap" style="width:1000px;height:700px;"></div>
 
 </body>
 </html>

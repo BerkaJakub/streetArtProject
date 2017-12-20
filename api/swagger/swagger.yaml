@@ -16,7 +16,6 @@ consumes:
   - application/json
 # format of the responses to the client (Accepts)
 produces:
-- application/xml
 - application/json
 - application/javascript
 - text/html
