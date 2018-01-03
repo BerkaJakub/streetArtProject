@@ -7,7 +7,7 @@ var util = require('util');
 
 
 module.exports = {
-  streetart: streetart
+  heatart: heatart
 };
 
 /*
@@ -16,7 +16,7 @@ module.exports = {
   Param 1: a handle to the request object
   Param 2: a handle to the response object
  */
-function streetart(req, res) {
+function heatart(req, res) {
 
   
   // variables defined in the Swagger document can be referenced using req.swagger.params.{parameter_name}
@@ -88,13 +88,8 @@ function streetart(req, res) {
               
               var photo = response.data.photo;
               var photoObj = {
-                  author: photo.owner.username,
-                  text: photo.title._content,
                   lat: photo.location.latitude,
-                  lon: photo.location.longitude,
-                  date: photo.dates.posted,
-                  urlFlickerThumb: buildThumbnailUrl(photo),
-                  urlFlickerSmall: buildPhotoSmallUrl(photo)
+                  lon: photo.location.longitude
               };
               photos.push(photoObj);
             }
@@ -112,8 +107,8 @@ function streetart(req, res) {
 
           res.format({
             'text/html': function(){
-              res.render('markers.ejs', {
-                city: req.swagger.params.city.value,
+              res.render('heat.ejs', {
+                city: city,
                 lat: location.lat,
                 lon: location.lng,
                 photos: photos
@@ -144,23 +139,3 @@ function streetart(req, res) {
 
 
 
-
-function buildThumbnailUrl(photo) {
-  return 'https://farm' + photo.farm + '.staticflickr.com/' + photo.server +
-    '/' + photo.id + '_' + photo.secret + '_q.jpg';
-}
-
-function buildPhotoSmallUrl(photo) {
-  return 'https://farm' + photo.farm + '.staticflickr.com/' + photo.server +
-    '/' + photo.id + '_' + photo.secret + '_m.jpg';
-}
-
-function buildPhotoUrl(photo) {
-  return 'https://farm' + photo.farm + '.staticflickr.com/' + photo.server +
-    '/' + photo.id + '_' + photo.secret + '.jpg';
-}
-
-function buildPhotoLargeUrl(photo) {
-  return 'https://farm' + photo.farm + '.staticflickr.com/' + photo.server +
-    '/' + photo.id + '_' + photo.secret + '_b.jpg';
-}

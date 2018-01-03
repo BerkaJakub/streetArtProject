@@ -20,12 +20,21 @@ produces:
 - application/javascript
 - text/html
 x-a127-config: {}
-x-a127-services: {}
+x-a127-services: 
+  cache:     
+      provider: volos-cache-memory
+      options:
+        name: hello-cache
+        ttl: 60000 
+
+    
 paths:
   /streetart:
     # binds a127 app logic to a route
     x-swagger-router-controller: street_art
-    x-a127-apply: {}
+    x-a127-apply: 
+      cache: {}
+
     get:
       description: Returns streetart photos from Flickr for specified city 
       # used as the method name of the controller
@@ -33,8 +42,7 @@ paths:
       parameters:
         - name: city
           in: query
-          description: The city you want streetart for
-          required: true
+          description: The city you want streetart photos for, default is Prague.
           type: string
       responses:
         "200":
@@ -42,6 +50,38 @@ paths:
           schema:
             # a pointer to a definition
             $ref: "#/definitions/StreetArtResponse"
+        "400":
+          description: Bad request.
+        "404":
+          description: City was not found.
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /heatart:
+    x-swagger-router-controller: heat_art
+    x-a127-apply: 
+      cache: {}
+    get:
+      description: Returns streetart Heatmap for city you want 
+      # used as the method name of the controller
+      operationId: heatart
+      parameters:
+        - name: city
+          in: query
+          description: The city you want heatmap of streetart for, default is Prague.
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/HeatArtResponse"
+        "400":
+          description: Bad request.
+        "404":
+          description: City was not found.
         # responses may fall through to errors
         default:
           description: Error
@@ -62,12 +102,31 @@ definitions:
         type: array
         items:
            $ref: "#/definitions/Photo"
+  HeatArtResponse:
+    type: object
+    properties:
+      city: 
+        type: string
+      lat:
+        type: string
+      lon:
+        type: string
+      photos:
+        type: array
+        items:
+           $ref: "#/definitions/PhotoLocation"
+  
+  PhotoLocation:
+    type: object
+    properties:
+      lat:
+        type: string
+      lon:
+        type: string
+
   Photo:
     type: object
     properties:
-      id:
-        type: integer
-        format: int64
       author:
         type: string
       text:

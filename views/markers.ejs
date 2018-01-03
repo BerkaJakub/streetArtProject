@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Photos of StreetArt</title>
+<style>
+    body {
+    min-height: 100%;
+    margin: 1rem;
+    padding: 0;
+    font: 300 1.2rem 'Lato', Verdana, Helvetica, sans-serif;
+    color: white;
+    background: #2a93e6;
+    }
+    h1{
+      font-weight: 300;
+    }
+
+     #googleMap{
+      max-width: 1000px;
+      height: 700px;
+      width: auto;
+      
+    }
+
+    input{
+    display: inline;
+    margin: 1rem;
+    border: 0;
+    border-bottom: 2px solid #bbc3ca;
+    font-size: 2rem;
+    background: transparent;
+    color: #bbc3ca;
+    }
+
+    input::-webkit-input-placeholder{
+        color: #bbc3ca !important;
+    }
+
+    input:focus{
+      outline: 0;
+	    color: #ffffff !important;
+      border-bottom: 2px solid #ffffff !important;
+    }
+
+    .info{
+      color: black;
+    }
+
+    button{
+
+        font-size: 1.0rem;
+        padding: 0.8rem;
+        margin-bottom: 0.3rem;
+        display: inline;
+        background-color: #2a93e6;
+        border: 1px solid #ffffff;
+        color: #ffffff;
+        font-weight: 600;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+        -webkit-transition: all 0.3s ease-in-out;
+        -moz-transition: all 0.3s ease-in-out;
+        transition: all 0.3s ease-in-out;
+        }
+        button:hover{
+        background-color: #ffffff;
+        color: #2a93e6;
+        border-color: #2a93e6;
+        }
+    
+</style>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAJrwnSThnUGXMjlCaJrWHmczNnzXVBSNo&libraries=visualization&callback=initialize" async defer>
+  </script>
+
+
+<script>
+var map;
+
+function initialize() {
+
+
+  var mapProp = {
+    center:new google.maps.LatLng(<%=lat%>, <%=lon%>),
+    zoom:12,
+    mapTypeId:google.maps.MapTypeId.ROADMAP
+  };
+  map=new google.maps.Map(document.getElementById("googleMap"), mapProp);
+
+  var infoWindow = new google.maps.InfoWindow();
+  function addMarkers(map, loc, text, author,urlThumb, urlSmall, date ) {
+    var marker = new google.maps.Marker({
+       position: loc,
+       icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+       label: '',
+       map: map,
+       title: 'StreetArt'
+    });
+    
+    var date = new Date(date*1000);
+    var DD = date.getDate();
+    var MM = date.getMonth();
+    var YY = date.getFullYear();
+    var content = "<div class='info'><h3 class='infotitle'>" + text + "</h3>" +
+            "<p class='infodesc'><img src=" + urlSmall + "/></p>" +
+            "<p>Posted by: " + author + ", on: "+ DD +"."+MM+"."+ YY + " </p></div>";
+    google.maps.event.addListener(marker, "click", function () {
+       marker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png');
+       infoWindow.setContent(content);
+       infoWindow.open(map, this);
+    });   
+  }
+
+  <% for(var i=0; i<photos.length; i++) { %>
+            addMarkers(map, {lat: <%= photos[i].lat %>, lng: <%= photos[i].lon %>}, "<%= photos[i].text %>", "<%= photos[i].author %>", "<%= photos[i].urlFlickerThumb %>", "<%= photos[i].urlFlickerSmall %>", "<%= photos[i].date %>"  );
+  <% } %>
+
+
+}
+
+function changeLocation(newLocation) {
+    location.replace("http://localhost:10010/streetart?city="+newLocation);
+}
+function getHeat(){
+    location.replace("http://localhost:10010/heatart?city=<%= city %>");
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+</head>
+
+<body>
+<h1>Photos of StreetArt in:</h1>
+<form name="change" onsubmit="return changeLocation(city)" >
+ <input type="text" name="city" placeholder="<%= city %>"/>
+</form>
+<button onclick="getHeat()">View HeatMap</button>
+<div id="googleMap" style="width:1000px;height:700px;"></div>
+
+</body>
+</html>

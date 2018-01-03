@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+    <title>Heatmaps of StreetArt</title>
+    <style>
+
+        body {
+        min-height: 100%;
+        margin: 1rem;
+        padding: 0;
+        font: 300 1.2rem 'Lato', Verdana, Helvetica, sans-serif;
+        color: white;
+        background: #2a93e6;
+        }
+        h1{
+        font-weight: 300;
+        }
+
+        input{
+        display: inline;
+        margin: 1rem;
+        border: 0;
+        border-bottom: 2px solid #bbc3ca;
+        font-size: 2rem;
+        background: transparent;
+        color: #bbc3ca;
+        }
+
+        input::-webkit-input-placeholder{
+        color: #bbc3ca !important;
+        }
+
+        input:focus{
+        outline: 0;
+        color: #ffffff !important;
+        border-bottom: 2px solid #ffffff !important;
+        }
+        button{
+
+        font-size: 1.0rem;
+        padding: 0.8rem;
+        margin-bottom: 0.3rem;
+        display: inline;
+        background-color: #2a93e6;
+        border: 1px solid #ffffff;
+        color: #ffffff;
+        font-weight: 600;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+        -webkit-transition: all 0.3s ease-in-out;
+        -moz-transition: all 0.3s ease-in-out;
+        transition: all 0.3s ease-in-out;
+        }
+        button:hover{
+        background-color: #ffffff;
+        color: #2a93e6;
+        border-color: #2a93e6;
+        }
+        #googleMap{
+        max-width: 1000px;
+        height: 700px;
+        width: auto;
+        }
+    </style>
+
+</head>
+<body>
+    <h1>Heatmap of StreetArt in:</h1>
+    <form name="change" onsubmit="return changeLocation(city)" >
+        <input type="text" name="city" placeholder="<%= city %>"/>
+    </form>
+      <button onclick="changeGradient()">Change gradient</button>
+      <button onclick="changeRadius()">Change radius</button>
+      <button onclick="changeOpacity()">Change opacity</button>
+      <button onclick="getPhotos()">View Photos</button>
+<div id="googleMap" style="width:1000px;height:700px;"></div>
+<script>
+var map,heatmap;
+var points = [];
+var grad = [
+          'rgba(0, 255, 255, 0)',
+          'rgba(0, 255, 255, 1)',
+          'rgba(0, 191, 255, 1)',
+          'rgba(0, 127, 255, 1)',
+          'rgba(0, 63, 255, 1)',
+          'rgba(0, 0, 255, 1)',
+          'rgba(0, 0, 223, 1)',
+          'rgba(0, 0, 191, 1)',
+          'rgba(0, 0, 159, 1)',
+          'rgba(0, 0, 127, 1)',
+          'rgba(63, 0, 91, 1)',
+          'rgba(127, 0, 63, 1)',
+          'rgba(191, 0, 31, 1)',
+          'rgba(255, 0, 0, 1)'];
+
+function initMap() {
+        map = new google.maps.Map(document.getElementById('googleMap'), {
+          zoom: 12,
+          center: new google.maps.LatLng(<%=lat%>, <%=lon%>),
+          mapTypeId: google.maps.MapTypeId.SATELITE,
+         
+        });
+
+        heatmap = new google.maps.visualization.HeatmapLayer({
+          data: getPoints(),
+          map: map,
+          gradient: grad,
+          radius: 20
+        });
+}
+
+function changeLocation(newLocation) {
+    location.replace("http://localhost:10010/heatart?city="+newLocation);
+}
+
+
+function changeGradient() {
+        var gradient = [
+          'rgba(0, 255, 255, 0)',
+          'rgba(0, 255, 255, 1)',
+          'rgba(0, 191, 255, 1)',
+          'rgba(0, 127, 255, 1)',
+          'rgba(0, 63, 255, 1)',
+          'rgba(0, 0, 255, 1)',
+          'rgba(0, 0, 223, 1)',
+          'rgba(0, 0, 191, 1)',
+          'rgba(0, 0, 159, 1)',
+          'rgba(0, 0, 127, 1)',
+          'rgba(63, 0, 91, 1)',
+          'rgba(127, 0, 63, 1)',
+          'rgba(191, 0, 31, 1)',
+          'rgba(255, 0, 0, 1)'
+        ]
+        heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
+}
+
+function changeRadius() {
+    heatmap.set('radius', heatmap.get('radius') ? null : 20);
+}
+
+function changeOpacity() {
+    heatmap.set('opacity', heatmap.get('opacity') ? null : 0.2);
+}
+
+function getPhotos(){
+    location.replace("http://localhost:10010/streetart?city=<%= city %>");
+}
+
+function getPoints() {
+ 
+    <% for(var i=0; i<photos.length; i++) { %>
+            points.push(new google.maps.LatLng(<%= photos[i].lat %>, <%= photos[i].lon %>));
+            //console.log(<%= photos[i].lat %>, <%= photos[i].lon %>);
+    <% } %>
+    return points;
+}
+
+
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAJrwnSThnUGXMjlCaJrWHmczNnzXVBSNo&libraries=visualization&callback=initMap" async defer></script>
+
+
+
+
+</body>
+</html>
