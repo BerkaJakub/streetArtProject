@@ -27,6 +27,26 @@ function streetart(req, res) {
   var streetart = {},
     promises = [];
 
+    /*axios.get('https://api.instagram.com/v1/media/search', {
+      params: {
+        access_token: '4348522426.e029fea.1fcf99cd0459477e9dc0b887e8fa4f41',
+        lat: "50.0755381",
+        lng: "14.43780049999998",
+        distance: 5000
+      }
+    })
+    .then(function (response) {
+     var photos = response.data.data;
+     
+     photos.forEach(photo => {
+       if(photo.tags.includes('street-art')){
+        console.log(photo.images);
+       }
+       
+     });   
+    });*/
+    
+
   axios.get(urlLocation).then(function(response){
     console.log(response.data.results[0].geometry.location);
     var location = response.data.results[0].geometry.location;
@@ -39,6 +59,7 @@ function streetart(req, res) {
         lon: location.lng,
         radius: 30,
         format: "json",
+        per_page: 500,
         nojsoncallback: 1
       }
     })
@@ -58,24 +79,45 @@ function streetart(req, res) {
   
           promises.push(promise);
         });
+        var instagramPromise = axios.get('https://api.instagram.com/v1/media/search', {
+          params: {
+            access_token: '4348522426.e029fea.1fcf99cd0459477e9dc0b887e8fa4f41',
+            lat: location.lat,
+            lng: location.lng,
+            distance: 5000
+          }
+        });
+        promises.push(instagramPromise);
         return promises;
   
       }).then(function (promises) {
         //console.log(promises);
         axios.all(promises).then(function (results) {
+          
           var photos =[];
           results.forEach(function (response) {
-            var photo = response.data.photo;
-            var photoObj = {
-                author: photo.owner.username,
-                text: photo.title._content,
-                lat: photo.location.latitude,
-                lon: photo.location.longitude,
-                date: photo.dates.posted,
-                urlFlickerThumb: buildThumbnailUrl(photo),
-                urlFlickerSmall: buildPhotoSmallUrl(photo)
-            };
-            photos.push(photoObj);
+            if(response.config.url == "https://api.instagram.com/v1/media/search"){
+              var photosInsta = response.data.data;
+              photosInsta.forEach(photo => {
+                if(photo.tags.includes('streetart') || photo.tags.includes('street-art') || photo.tags.includes("streetarteverywhere")){
+                 console.log(photo.images);
+                }
+              });
+            }else{
+              
+              var photo = response.data.photo;
+              var photoObj = {
+                  author: photo.owner.username,
+                  text: photo.title._content,
+                  lat: photo.location.latitude,
+                  lon: photo.location.longitude,
+                  date: photo.dates.posted,
+                  urlFlickerThumb: buildThumbnailUrl(photo),
+                  urlFlickerSmall: buildPhotoSmallUrl(photo)
+              };
+              photos.push(photoObj);
+            }
+            
   
   
           });
